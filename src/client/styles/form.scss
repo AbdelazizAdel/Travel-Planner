@@ -1,0 +1,44 @@
+$form-font-size: 1.3em;
+$btn-color: rgb(112, 62, 221);
+
+form {
+    display: flex;
+    margin-top: 3vh;
+    box-shadow: 0 2px 4px #aaa;
+    border-radius: 8px;
+}
+
+.place-wrapper, .date-wrapper {
+    border: 1px solid #bbb;
+    border-right: none;
+    padding-left: 5px;
+
+    i {
+        font-size: $form-font-size;
+        color: #aaa;
+    }
+}
+
+.place-wrapper {
+    border-radius: 8px 0 0 8px;
+}
+
+input:focus {
+    outline: 0;
+}
+
+input[type="text"] {
+    border: none;
+    height: 9vh;
+    width: 16vw;
+    font-size: $form-font-size;
+}
+
+input[type="submit"] {
+    width: 10vw;
+    border: 1px solid $btn-color;
+    border-radius: 0 8px 8px 0;
+    font-size: $form-font-size;
+    background-color: $btn-color;
+    color: #fffff8;
+}

@@ -1,0 +1,14 @@
+%flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+body {
+    @extend %flow;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+main {
+    @extend %flow;
+}
