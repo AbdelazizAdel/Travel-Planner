@@ -1,5 +1,6 @@
-$form-font-size: 1.3em;
+$form-font-size: 1.4em;
 $btn-color: rgb(112, 62, 221);
+$btn-hover: rgb(81, 1, 252);
 
 form {
     display: flex;
@@ -41,4 +42,11 @@ input[type="submit"] {
     font-size: $form-font-size;
     background-color: $btn-color;
     color: #fffff8;
+    transition-duration: 0.3s;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+input[type="submit"]:hover {
+    background-color: $btn-hover;
+    cursor: pointer;
 }

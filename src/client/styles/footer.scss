@@ -1,0 +1,17 @@
+footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 8vh;
+    background-color: rgb(81, 1, 252);
+    color: #fffff8;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 5px;
+    padding: 0 10px;
+    font-size: 1.2em;
+}
+
+pre {
+    font-family: 'Ubuntu', sans-serif;
+}

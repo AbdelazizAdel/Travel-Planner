@@ -1,14 +1,58 @@
 %flow {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    justify-items: center;
 }
 
-body {
+body, main {
     @extend %flow;
     font-family: 'Ubuntu', sans-serif;
 }
 
-main {
-    @extend %flow;
+.error {
+    display: inline-block;
+    color: #f00;
+    margin-top: 0.5vh;
 }
+
+.no-error {
+    display: none;
+}
+
+.card {
+    display: grid;
+    margin: 5% 0;
+    background-color: #fffff8;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    color: #222;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition-duration: 0.3s;
+
+    img {
+        border-radius: 5px;
+        justify-self: stretch;
+    }
+
+    .main-info {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+    }
+
+    .col {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin: 1vh 1vw;
+        min-height: 10vh;
+    }
+
+    span {
+        font-size: 1.5em;
+    }
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+

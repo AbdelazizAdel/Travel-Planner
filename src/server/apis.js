@@ -1,5 +1,5 @@
-const rp = require('request-promise');
-const dotenv = require('dotenv');
+const rp = require('request-promise'); //to make http requests
+const dotenv = require('dotenv'); // for the environment variables
 dotenv.config();
 
 
@@ -85,7 +85,10 @@ function removeSpaces(city) {
     return city.replace(/ /g, '+');
 }
 
-function getPhoto(city) {
+/* this function takes a city and a country as an input and gets a photo of the city from Pixabay API if the API doesn't return
+any results for the city we get the photo of the country instead.
+*/
+function getPhoto(city, country) {
     const options = {
         uri: 'https://pixabay.com/api/',
         qs: {
@@ -99,6 +102,13 @@ function getPhoto(city) {
         return {
             img_url: data.hits[0].webformatURL
         };
+    }).catch((error) => {
+        options.qs.q = removeSpaces(country);
+        return rp.get(options).then((data) => {
+            return {
+                img_url: data.hits[0].webformatURL
+            };
+        });
     });
     return res;
 }
