@@ -28,12 +28,12 @@ export function checkFormFields(city, date) {
 export function updateErrorUI(error, text) {
     const span = document.querySelector('span');
     if (error) {
-        span.classList.remove('no-error');
+        span.classList.remove('hide');
         span.classList.add('error');
         span.innerHTML = `<i>${text}</i>`;
     } else {
         span.classList.remove('error');
-        span.classList.add('no-error');
+        span.classList.add('hide');
     }
 }
 

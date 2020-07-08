@@ -1,0 +1,25 @@
+.flight-form {
+    input[type="text"] {
+        border: 1px solid #999;
+        border-radius: 5px;
+        margin-bottom: 1vh;
+    }
+
+    input[type="text"]:focus {
+        outline: 0;
+    }
+
+    .btn-col {
+        position: relative;
+        top: 5.5vh;
+        left: 1vw;
+        display: inline-block;
+    }
+
+    button {
+        min-width: 5vw;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        padding: 5px;
+    }
+}

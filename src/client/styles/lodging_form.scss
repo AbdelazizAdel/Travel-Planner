@@ -1,0 +1,28 @@
+.lodging-form {
+
+    box-sizing: border-box;
+
+    input[type="text"] {
+        border: 1px solid #999;
+        border-radius: 5px;
+        margin-right: 1vw;
+    }
+
+    input[type="text"]:focus {
+        outline: 0;
+    }
+
+    input[type="text"]:last-child {
+        margin-right: 0;
+    }
+
+    button {
+        padding: 5px;
+        min-width: 5vw;   
+    }
+
+    div {
+        margin: 2vh 0;
+        text-align: center;
+    }
+}
