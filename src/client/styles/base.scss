@@ -74,12 +74,12 @@ main {
         border-radius: 5px;
     }
 
-    .lodging {
+    // .lodging {
 
-        span {
-            margin-right: 1vw;
-        }
-    }
+    //     span {
+    //         margin-right: 1vw;
+    //     }
+    // }
 
     .btns {
         margin: 2vh 0;
@@ -89,7 +89,7 @@ main {
     button {
         padding: 10px;
         cursor: pointer;
-        margin: 0 auto;
+        margin: 0 0.5vw;
         min-width: auto;
         background-color: $btn-color;
         color: #fffff8;
