@@ -1,12 +1,11 @@
+$btn-color: rgb(112, 62, 221);
+$btn-hover: rgb(81, 1, 252);
+
 .flight-form {
     input[type="text"] {
         border: 1px solid #999;
         border-radius: 5px;
         margin-bottom: 1vh;
-    }
-
-    input[type="text"]:focus {
-        outline: 0;
     }
 
     .btn-col {
@@ -21,5 +20,13 @@
         border: 1px solid transparent;
         border-radius: 5px;
         padding: 5px;
+        background-color: $btn-color;
+        color: #fffff8;
+        transition-duration: 0.3s;
     }
+
+    button:hover {
+        background-color: $btn-hover;
+    }
+
 }

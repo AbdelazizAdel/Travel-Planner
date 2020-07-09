@@ -1,6 +1,6 @@
 //This function checks for valid city names
 export function checkCityName(city) {
-    const regex = /[^a-z ]/i;
+    const regex = /[^a-z ]|(^\s*$)/i;
     return !regex.test(city);
 }
 
