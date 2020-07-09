@@ -1,6 +1,7 @@
 let projectData = [];
 let count = 0;
 const PORT = 8080;
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -13,7 +14,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static('dist'));
+app.use(express.static('dist', {
+    index: false
+}));
 
 //This function merges the 3 objects returned from the 3 apis into a single object
 function mergeObjects(arr) {
@@ -37,21 +40,8 @@ function addData(city, date, result) {
     projectData.push(obj);
 }
 
-app.post('/', async (req, res) => {
-    const city = req.body.city;
-    const date = req.body.date;
-    let result;
-    let llc;
-    try {
-        llc = await apis.callGeonamesAPI(city);
-        const promises = [apis.getTheWeather(llc.lat, llc.lng, date), apis.getPhoto(city, llc.country)];
-        result = await Promise.all(promises);
-    } catch (error) {
-        res.send(error);
-    }
-    result.push(llc);
-    addData(city, date, result);
-    const data = projectData[projectData.length - 1]
+//This function sorts the projectData array according to remaining days and puts trips that already passed at the end(-ve reaminig days)
+function sort() {
     projectData.sort((a, b) => {
         if (a['rem_days'] < 0 && b['rem_days'] >= 0)
             return 1;
@@ -61,11 +51,36 @@ app.post('/', async (req, res) => {
             return b['rem_days'] - a['rem_days'];
         return a['rem_days'] - b['rem_days'];
     });
+}
+
+//This function handels the main page of the website
+app.get('/', (req, res) => {
+    count = 0;
+    projectData = [];
+    res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
+})
+
+//This function takes the city and date from the user, calls all apis and creates an entry in the projectData
+app.post('/', async (req, res) => {
+    const city = req.body.city;
+    const date = req.body.date;
+    try {
+        const llc = await apis.callGeonamesAPI(city);
+        const promises = [apis.getTheWeather(llc.lat, llc.lng, date), apis.getPhoto(city, llc.country)];
+        let result = await Promise.all(promises);
+        result.push(llc);
+        addData(city, date, result);
+    } catch (error) {
+        res.send(error);
+    }
+    const data = projectData[projectData.length - 1]
+    sort();
     const pos = projectData.indexOf(data);
-    data['pos'] = pos == 0 ? -1 : projectData[pos - 1]['id'];
+    data['pos'] = pos == 0 ? -1 : projectData[pos - 1]['id']; //In order to know where to put the new trip in the view
     res.send(data);
 });
 
+//This function takes the flight info from the user and adds it to the correct entry in the projectData
 app.post('/flight', (req, res) => {
     const data = req.body.data;
     const id = req.body.id;
@@ -92,6 +107,7 @@ function deleteEntry(id) {
     return found;
 }
 
+//This function handels the delete request from the user to remove a trip
 app.delete('/delete', (req, res) => {
     const id = req.body.id;
     const found = deleteEntry(id);

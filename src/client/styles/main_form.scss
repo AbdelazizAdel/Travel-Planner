@@ -8,6 +8,10 @@ $btn-hover: rgb(81, 1, 252);
     box-shadow: 0 2px 4px #aaa;
     border-radius: 8px;
 
+    @media screen and (max-width: 974px) {
+        flex-direction: column;
+    }
+
     .place-wrapper, .date-wrapper {
         border: 1px solid #bbb;
         border-right: none;
@@ -17,17 +21,37 @@ $btn-hover: rgb(81, 1, 252);
             font-size: $form-font-size;
             color: #aaa;
         }
+        @media screen and (max-width: 974px) {
+            border: 1px solid #bbb;
+            i{
+                font-size: 1.3em;
+            }
+        }
     }
     
     .place-wrapper {
         border-radius: 8px 0 0 8px;
+        @media screen and (max-width: 974px) {
+            border-radius: 8px 8px 0 0;
+        }
     }
     
+    @media screen and (max-width: 974px) {
+        .date-wrapper {
+            border-radius: 0;
+        }
+    }
+
     input[type="text"] {
         border: none;
         height: 9vh;
         width: 16vw;
         font-size: $form-font-size;
+
+        @media screen and (max-width: 974px) {
+            min-height: 9vh;
+            width: 50vw;
+        }
     }
     
     input[type="submit"] {
@@ -39,6 +63,14 @@ $btn-hover: rgb(81, 1, 252);
         color: #fffff8;
         transition-duration: 0.3s;
         font-family: 'Ubuntu', sans-serif;
+        min-width: auto;
+
+        @media screen and (max-width: 974px) {
+            min-height: 9vh;
+            width: inherit;
+            border-radius: 0 0 8px 8px;
+            font-size: 1.5em;
+        }
     }
     
     input[type="submit"]:hover {

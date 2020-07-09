@@ -13,6 +13,11 @@ $btn-hover: rgb(81, 1, 252);
         top: 5.5vh;
         left: 1vw;
         display: inline-block;
+        
+        @media screen and (max-width: 974px){
+            position: static;
+            display: block;
+        }
     }
 
     button {
@@ -23,10 +28,28 @@ $btn-hover: rgb(81, 1, 252);
         background-color: $btn-color;
         color: #fffff8;
         transition-duration: 0.3s;
+
+        @media screen and (max-width: 974px){
+            display: block;
+            padding: 5px 15px;
+        }
     }
 
     button:hover {
         background-color: $btn-hover;
+    }
+
+    .btn-col + div {
+        text-align: center;
+        color: #f00;
+
+        span {
+            font-size: 1em;
+            background-color: #fff;
+            padding: 0;
+            margin: 0;
+            border-radius: 0;
+        }
     }
 
 }

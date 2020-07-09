@@ -1,6 +1,8 @@
 import {
     checkCityName,
-    checkDate
+    checkDate,
+    checkTime,
+    checkDuration
 } from './inputValidation.js';
 
 // Event listener for "save trip" button
@@ -25,20 +27,42 @@ export function mainFormListener(event) {
 function cardListener(event) {
     const card = event.currentTarget;
     const target = event.target;
-    if (target == card.querySelector('.btns button:first-child')) { //checks if the target is the "add lodging info" button
+    if (target == card.querySelector('#add-flight')) { //checks if the target is the "add flight info" button
         const form = createFlightInfoForm();
         card.querySelector('.btns').insertAdjacentElement('beforebegin', form);
+        card.querySelector('.btns button:first-child').remove();
     } else if (target == card.querySelector('.flight-form button')) { // checks if the target is the "save" button in the flight info form
+        const time = card.querySelector('#takeoff-time').value;
+        const dur = card.querySelector('#flight-duration').value;
+        if (!checkFlightFormFields(time, dur, card))
+            return;
         saveData(card).then((obj) => {
             card.querySelector('.main-info').insertAdjacentElement('afterend', createFlightInfo(obj));
             card.querySelector('.flight-form').classList.add('hide');
         });
-    } else if (target == card.querySelector('.btns button:last-child')) { // checks if the target is the "remove" button 
+    } else if (target == card.querySelector('#remove')) { // checks if the target is the "remove" button 
         deleteReq(parseInt(/[0-9]+$/.exec(card.id)[0])).then((res) => {
             if (res.deleted == true)
                 card.remove();
         })
     }
+}
+
+//This function checks for valid takeoff time and flight duration and showa appropriate error messages to the user if any
+function checkFlightFormFields(time, dur, card) {
+    if (!checkTime(time)) {
+        card.querySelector('.btn-col + div span').textContent = 'please enter time in this format HH:MM';
+        card.querySelector('.btn-col + div').classList.remove('hide');
+        return false;
+    }
+    if (!checkDuration(dur)) {
+        card.querySelector('.btn-col + div span').textContent = 'please enter duration in this format HH:MM';
+        card.querySelector('.btn-col + div').classList.remove('hide');
+        return false;
+    }
+    card.querySelector('.btn-col + div span').textContent = '';
+    card.querySelector('.btn-col + div').classList.add('hide');
+    return true;
 }
 
 //This function saves the flight info data in the server 
@@ -149,8 +173,10 @@ function createButtons() {
     div.classList.add('btns');
     let btn_1 = document.createElement('button');
     btn_1.type = 'button';
+    btn_1.id = "add-flight";
     btn_1.textContent = 'add flight info'
     let btn_2 = document.createElement('button');
+    btn_2.id = "remove";
     btn_2.type = 'button';
     btn_2.textContent = 'remove trip';
     div.appendChild(btn_1);
@@ -239,6 +265,10 @@ function createFlightInfoForm() {
     btn.textContent = 'save';
     div_4.appendChild(btn);
     fieldset.appendChild(div_4);
+    let div_5 = document.createElement('div');
+    div_5.classList.add('hide');
+    div_5.appendChild(document.createElement('span'));
+    fieldset.appendChild(div_5);
     form.appendChild(fieldset);
     return form;
 }
