@@ -1,4 +1,5 @@
 let ProjectData = [];
+let count = 0;
 const PORT = 8080;
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -25,6 +26,16 @@ function mergeObjects(arr) {
 }
 
 
+//This function adds the city, date, id and remaining days to the main object
+function addData(city, date, result) {
+    let obj = mergeObjects(result);
+    obj["city"] = city;
+    obj["date"] = date;
+    obj["rem_days"] = apis.getCountdown(date);
+    obj["id"] = count++;
+    ProjectData.push(obj);
+}
+
 app.post('/', async (req, res) => {
     const city = req.body.city;
     const date = req.body.date;
@@ -32,11 +43,8 @@ app.post('/', async (req, res) => {
     const promises = [apis.getTheWeather(llc.lat, llc.lng, date), apis.getPhoto(city, llc.country)];
     let result = await Promise.all(promises);
     result.push(llc);
-    let obj = mergeObjects(result);
-    obj["city"] = city;
-    obj["date"] = date;
-    ProjectData[0] = obj;
-    res.send(ProjectData[0]);
+    addData(city, date, result);
+    res.send(ProjectData[ProjectData.length - 1]);
 });
 
 app.listen(PORT, () => {

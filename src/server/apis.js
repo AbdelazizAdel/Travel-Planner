@@ -50,6 +50,12 @@ function getWeatherForecast(lat, lng, days) {
     return res;
 }
 
+//This function computes the countdown for the trip
+function getCountdown(date) {
+    const res = parseInt((new Date(date).getTime() - new Date().getTime()) / 86400000);
+    return res;
+}
+
 /*
 This function computes the number of days remaining for the trip and returns -1, 0 or a +ve value between 8 and 16.
 "-1" means that the trip is in the past.
@@ -58,7 +64,7 @@ This function computes the number of days remaining for the trip and returns -1,
 then the return value is 16 because the Weatherbit api can't predict more than 16 days.
 */
 function getNumDays(date) {
-    const res = parseInt((new Date(date).getTime() - new Date().getTime()) / 86400000);
+    const res = getCountdown(date);
     if (res < 0)
         return -1;
     if (res <= 7)
@@ -114,10 +120,11 @@ function getPhoto(city, country) {
 }
 
 module.exports = {
-    callGeonamesAPI: callGeonamesAPI,
-    getWeatherForecast: getWeatherForecast,
-    getTheWeather: getTheWeather,
-    getNumDays: getNumDays,
-    removeSpaces: removeSpaces,
-    getPhoto: getPhoto
+    callGeonamesAPI,
+    getWeatherForecast,
+    getTheWeather,
+    getNumDays,
+    removeSpaces,
+    getPhoto,
+    getCountdown
 };
