@@ -15,29 +15,49 @@ export function mainFormListener(event) {
         city,
         date
     };
-    postReq(obj).then((ret) => {
+    postReq('/', obj).then((ret) => {
         createCard(ret);
-        document.querySelector('.btns button:first-child').addEventListener('click', addFlightInfoListener);
+        document.querySelector(`#sec_${ret.id}`).addEventListener('click', cardListener);
     });
 }
 
-//Event listener for "add flight info" button
-function addFlightInfoListener(event) {
-    const form = createFlightInfoForm();
-    document.querySelector('div.btns').insertAdjacentElement('beforebegin', form);
+//Event listener for all the buttons inside the card
+function cardListener(event) {
+    const card = event.currentTarget;
+    const target = event.target;
+    if (target == card.querySelector('.btns button:first-child')) { //checks if the target is the "add lodging info" button
+        const form = createFlightInfoForm();
+        card.querySelector('.btns').insertAdjacentElement('beforebegin', form);
+    } else if (target == card.querySelector('.flight-form button')) { // checks if the target is the "save" button in the flight info form
+        saveData(card).then((obj) => {
+            card.querySelector('.main-info').insertAdjacentElement('afterend', createFlightInfo(obj));
+            card.querySelector('.flight-form').classList.add('hide');
+        });
+    } else if (target == card.querySelector('.btns button:last-child')) { // checks if the target is the "remove" button 
+        deleteReq(parseInt(/[0-9]+$/.exec(card.id)[0])).then((res) => {
+            if (res.deleted == true)
+                card.remove();
+        })
+    }
 }
 
-//Event listener for the "save" button in the flight info form
-function flightInfoSaveListener(event) {
-    const data = {
-        airline: document.querySelector('#airline').value,
-        flight_no: document.querySelector('#flight-number').value,
-        dep_airport: document.querySelector('#departure-airport').value,
-        arr_airport: document.querySelector('#arrival-airport').value,
-        takeoff_time: document.querySelector('#takeoff-time').value,
-        flight_dur: document.querySelector('#flight-duration').value
+//This function saves the flight info data in the server 
+function saveData(card) {
+    const obj = {
+        data: {
+            airline: card.querySelector('#airline').value,
+            flight_no: card.querySelector('#flight-number').value,
+            dep_airport: card.querySelector('#departure-airport').value,
+            arr_airport: card.querySelector('#arrival-airport').value,
+            takeoff_time: card.querySelector('#takeoff-time').value,
+            flight_dur: card.querySelector('#flight-duration').value
+        },
+        id: parseInt(/[0-9]+$/.exec(card.id)[0])
     };
-
+    const res = postReq('/flight', obj).then((ret) => {
+        return ret;
+    });
+    return res;
 }
 
 //This function shows error messages to the user in the main form if there are any
@@ -114,6 +134,7 @@ function createMainDiv(obj) {
 //This function creates the main info section in the card
 function createMainInfo(obj) {
     let fieldset = document.createElement('fieldset');
+    fieldset.classList.add('main-info');
     let legend = document.createElement('legend');
     legend.textContent = 'main info';
     fieldset.appendChild(legend);
@@ -141,6 +162,8 @@ function createButtons() {
 function createCard(obj) {
     let sec = document.createElement('section');
     sec.classList.add('card');
+    if (obj.rem_days < 0)
+        sec.classList.add('passed');
     sec.id = `sec_${obj.id}`;
     const img = createImg(obj.img_url, obj.rem_days);
     sec.appendChild(img);
@@ -148,12 +171,15 @@ function createCard(obj) {
     sec.appendChild(mainInfo);
     const btns = createButtons();
     sec.appendChild(btns);
-    document.querySelector('main').insertAdjacentElement('beforeend', sec);
+    if (obj['pos'] == -1)
+        document.querySelector('.cards').insertAdjacentElement('afterbegin', sec);
+    else
+        document.querySelector(`#sec_${obj['pos']}`).insertAdjacentElement('afterend', sec);
 }
 
 //This function makes a post request to the server
-function postReq(input) {
-    const data = fetch('/', {
+function postReq(url, input) {
+    const data = fetch(url, {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
@@ -222,13 +248,13 @@ function createFlightDiv(obj) {
     const div = document.createElement('div');
     div.classList.add('content');
     let text1 = `Airline: ${obj.airline}`;
-    let text2 = `Flight number: ${flight_no}`;
+    let text2 = `Flight number: ${obj.flight_no}`;
     div.appendChild(createSubDiv(text1, text2));
     text1 = `Departure airport: ${obj.dep_airport}`;
     text2 = `Arrival airport: ${obj.arr_airport}`;
     div.appendChild(createSubDiv(text1, text2));
-    text1 = `Takeoff time: ${takeoff_time}`;
-    text2 = `Flight duration: ${flight_dur}`;
+    text1 = `Takeoff time: ${obj.takeoff_time}`;
+    text2 = `Flight duration: ${obj.flight_dur}`;
     div.appendChild(createSubDiv(text1, text2));
     return div;
 }
@@ -241,4 +267,21 @@ function createFlightInfo(obj) {
     fieldset.appendChild(legend);
     fieldset.appendChild(createFlightDiv(obj));
     return fieldset;
+}
+
+//This function deletes a trip from the main data object in the server
+function deleteReq(id) {
+    const data = fetch('/delete', {
+        method: 'DELETE',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id
+        })
+    }).then((res) => {
+        return res.json();
+    });
+    return data;
 }

@@ -31,6 +31,15 @@ main {
     display: none;
 }
 
+.cards {
+    display: grid;
+    justify-items: stretch;
+}
+
+.passed {
+    opacity: 0.6;
+}
+
 .card {
     display: grid;
     margin: 5% 0;

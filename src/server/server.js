@@ -1,10 +1,11 @@
-let ProjectData = [];
+let projectData = [];
 let count = 0;
 const PORT = 8080;
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const apis = require('./apis.js');
+
 
 const app = express();
 app.use(bodyParser.urlencoded({
@@ -33,18 +34,75 @@ function addData(city, date, result) {
     obj["date"] = date;
     obj["rem_days"] = apis.getCountdown(date);
     obj["id"] = count++;
-    ProjectData.push(obj);
+    projectData.push(obj);
 }
 
 app.post('/', async (req, res) => {
     const city = req.body.city;
     const date = req.body.date;
-    const llc = await apis.callGeonamesAPI(city);
-    const promises = [apis.getTheWeather(llc.lat, llc.lng, date), apis.getPhoto(city, llc.country)];
-    let result = await Promise.all(promises);
+    let result;
+    let llc;
+    try {
+        llc = await apis.callGeonamesAPI(city);
+        const promises = [apis.getTheWeather(llc.lat, llc.lng, date), apis.getPhoto(city, llc.country)];
+        result = await Promise.all(promises);
+    } catch (error) {
+        res.send(error);
+    }
     result.push(llc);
     addData(city, date, result);
-    res.send(ProjectData[ProjectData.length - 1]);
+    const data = projectData[projectData.length - 1]
+    projectData.sort((a, b) => {
+        if (a['rem_days'] < 0 && b['rem_days'] >= 0)
+            return 1;
+        if (a['rem_days'] >= 0 && b['rem_days'] < 0)
+            return -1;
+        if (a['rem_days'] < 0 && b['rem_days'] < 0)
+            return b['rem_days'] - a['rem_days'];
+        return a['rem_days'] - b['rem_days'];
+    });
+    const pos = projectData.indexOf(data);
+    data['pos'] = pos == 0 ? -1 : projectData[pos - 1]['id'];
+    res.send(data);
+});
+
+app.post('/flight', (req, res) => {
+    const data = req.body.data;
+    const id = req.body.id;
+    for (const obj of projectData) {
+        if (obj['id'] == id) {
+            for (const attr in data) {
+                obj[attr] = data[attr];
+            }
+            res.send(obj);
+        }
+    }
+});
+
+//This function deletes an entry from projectData with the specified id
+function deleteEntry(id) {
+    let found = false;
+    for (let i = 0; i < projectData.length; i++) {
+        if (projectData[i]['id'] == id) {
+            found = true;
+            projectData.splice(i, 1);
+            break;
+        }
+    }
+    return found;
+}
+
+app.delete('/delete', (req, res) => {
+    const id = req.body.id;
+    const found = deleteEntry(id);
+    if (found)
+        res.send({
+            'deleted': true
+        });
+    else
+        res.send({
+            'deleted': false
+        });
 });
 
 app.listen(PORT, () => {
