@@ -13,4 +13,8 @@ flight info.
 **Notes:**
 1. You can test part 4.2 in the *Extra parts* section by entering dates in the past.
 2. The website takes on average 3 seconds to show results so please be patient.
-3. Please make sure your in production mode not development mode.
+3. Please make sure you're in production mode not in development mode when testing the functionality.
+4. The .env file contains 3 entries:
+    4.1: *GN_USERNAME* for the geonames api.
+    4.2: *WB_API_KEY* for the weatherbit api.
+    4.3: *P_API_KEY* for the pixabay api.
