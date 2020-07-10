@@ -17,7 +17,13 @@ export function mainFormListener(event) {
         city,
         date
     };
-    postReq('/', obj).then((ret) => {
+    postReq('/trip', obj).then((ret) => {
+        let arr = JSON.parse(localStorage.getItem('projectData'));
+        arr.push(ret)
+        sort(arr);
+        const pos = arr.indexOf(ret);
+        ret['pos'] = pos == 0 ? -1 : arr[pos - 1]['id'];
+        localStorage.setItem('projectData', JSON.stringify(arr));
         createCard(ret);
         document.querySelector(`#sec_${ret.id}`).addEventListener('click', cardListener);
     });
@@ -40,13 +46,15 @@ function cardListener(event) {
             card.querySelector('.main-info').insertAdjacentElement('afterend', createFlightInfo(obj));
             card.querySelector('.flight-form').classList.add('hide');
         });
-    } else if (target == card.querySelector('#remove')) { // checks if the target is the "remove" button 
-        deleteReq(parseInt(/[0-9]+$/.exec(card.id)[0])).then((res) => {
-            if (res.deleted == true)
-                card.remove();
-        })
+    } else if (target == card.querySelector('#remove')) { // checks if the target is the "remove" button
+        const id = parseInt(/[0-9]+$/.exec(card.id)[0]);
+        card.remove();
+        let arr = JSON.parse(localStorage.getItem('projectData'));
+        deleteEntry(id, arr);
+        localStorage.setItem('projectData', JSON.stringify(arr));
     }
 }
+
 
 //This function checks for valid takeoff time and flight duration and showa appropriate error messages to the user if any
 function checkFlightFormFields(time, dur, card) {
@@ -79,6 +87,15 @@ function saveData(card) {
         id: parseInt(/[0-9]+$/.exec(card.id)[0])
     };
     const res = postReq('/flight', obj).then((ret) => {
+        let arr = JSON.parse(localStorage.getItem('projectData'));
+        for (const obj of arr) {
+            if (obj['id'] == ret['id']) {
+                for (const attr in ret) {
+                    obj[attr] = ret[attr];
+                }
+            }
+        }
+        localStorage.setItem('projectData', JSON.stringify(arr));
         return ret;
     });
     return res;
@@ -299,19 +316,25 @@ function createFlightInfo(obj) {
     return fieldset;
 }
 
-//This function deletes a trip from the main data object in the server
-function deleteReq(id) {
-    const data = fetch('/delete', {
-        method: 'DELETE',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            id
-        })
-    }).then((res) => {
-        return res.json();
+//This function sorts the projectData array according to remaining days and puts trips that already passed at the end(-ve reaminig days)
+function sort(arr) {
+    arr.sort((a, b) => {
+        if (a['rem_days'] < 0 && b['rem_days'] >= 0)
+            return 1;
+        if (a['rem_days'] >= 0 && b['rem_days'] < 0)
+            return -1;
+        if (a['rem_days'] < 0 && b['rem_days'] < 0)
+            return b['rem_days'] - a['rem_days'];
+        return a['rem_days'] - b['rem_days'];
     });
-    return data;
+}
+
+//This function deletes an entry from projectData with the specified id in the local storage
+function deleteEntry(id, arr) {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i]['id'] == id) {
+            arr.splice(i, 1);
+            break;
+        }
+    }
 }

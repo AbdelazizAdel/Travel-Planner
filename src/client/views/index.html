@@ -31,6 +31,7 @@
            <pre>follow us @ <i class="fab fa-facebook"></i>  <i class="fab fa-twitter"></i>  <i class="fab fa-instagram"></i></pre>
         </footer>
         <script>
+            localStorage.setItem('projectData', '[]');
             if ('serviceWorker' in navigator) {
              window.addEventListener('load', () => {
              navigator.serviceWorker.register('/service-worker.js');
